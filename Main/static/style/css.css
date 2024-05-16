@@ -1,0 +1,17 @@
+
+.button_sub{
+  background-color: #FE7A36;
+  color: black;
+  outline: none;
+  border: none;
+}
+a{
+  text-decoration: none;
+  color: black;
+}
+*{
+  padding: 0;
+  margin: 0;
+  font-family: "B Titr";
+  direction: rtl;
+}

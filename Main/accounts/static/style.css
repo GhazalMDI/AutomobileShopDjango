@@ -1,0 +1,56 @@
+.container-fluid .bg-d {
+    background-color: rgb(215, 213, 213);
+    /*background-color: yellow;*/
+}
+
+ul li {
+    list-style: none;
+    margin-top: 20px;
+}
+
+.list-title {
+    height: 55vh;
+}
+
+a {
+    text-decoration: none;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.full {
+    font-size: medium;
+    margin: 0;
+    padding: 0;
+}
+
+small {
+    color: gray;
+}
+
+.fa-user {
+    color: #000000;
+}
+
+i {
+    color: #000000;
+}
+
+.btn-edit {
+    background-color: #000202;
+    border: 1px solid white;
+    padding: 8px 28px;
+    border-radius: 8px;
+}
+
+.btn-edit-click {
+    background-color: #496989;
+}
+.gray{
+    color: #3a3a3a;
+    font-size: small;
+}
+

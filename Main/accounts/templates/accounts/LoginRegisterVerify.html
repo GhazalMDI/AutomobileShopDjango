@@ -1,0 +1,30 @@
+{% extends '_base.html' %}
+{% block title %}
+{% endblock %}
+
+{% block css %}{% endblock %}
+{% block content %}
+    <Div class="container-fluid" style="height: 60vh">
+
+        <div class="row d-flex align-items-center justify-content-center">
+            <div class="col-3 card mt-5 d-flex p-4">
+                <small> کد تایید را وارد کنید</small>
+                <br>
+                <p>کد تایید برای شماره {{ phone_number }} پیامک شد</p>
+                <br>
+                <form class="d-flex flex-column align-items-start justify-content-center" action="" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="code" id="code" class="form-control">
+                    <br>
+                    <div class="col-3">
+                        <button class="btn btn button_sub" type="submit">ورود</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </Div>
+
+{% endblock %}
+
+{% block js %}
+{% endblock %}

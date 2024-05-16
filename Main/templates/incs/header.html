@@ -1,0 +1,126 @@
+<style>
+
+ul.nav li{
+    list-style: none;
+    padding: 5px 0;
+    transition:  ease-in-out all 0.3s;
+    width: 100pc;
+}
+ul.nav li:hover{
+    border-bottom: 1px solid red;
+
+}
+ul.nav li:hover a{
+    color: red;
+}
+</style>
+<nav>
+    <section class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">لوگو</a>
+            <form class="d-flex col-8 " role="search">
+                <input class="form-control me-2" type="search" placeholder="جست و جو کنید" aria-label="Search">
+                <button class="btn btn-light" type="submit">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex">
+
+                    <li class="nav-item">
+                        {#                    <a class="nav-link text-dark" aria-current="page" href="#">خانه</a>#}
+                    </li>
+                    <div class="d-flex justify-content-between gap-2">
+
+                        <li class="nav-item dropdown border rounded">
+                            <a class="nav-link text-dark d-flex align-items-center gap-1" href="#" role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                <small> <i class="fa-regular fa-user"></i></small>
+                                <small> حساب کاربری</small>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li {% if not request.user.is_authenticated %}>
+                                        <a class="dropdown-item text-dark" href="{% url 'accounts:LoginRegister' %}">
+                                            <small>ورود یا ثبت نام</small>
+                                        </a></li>
+                                {% else %}
+                                    <li><a class="dropdown-item text-dark"
+                                           href="{% url 'accounts:Profile' %}">پروفایل</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item text-dark" href="{% url 'accounts:LogOut' %}">خروج از
+                                        سایت </a></li>
+                                {% endif %}
+
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark border rounded" href="{% url 'accounts:Profile' %}">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                            </a>
+                        </li>
+
+                    </div>
+                </ul>
+
+            </div>
+
+        </div>
+
+    </section>
+    <header>
+        <ul class="d-flex gap-4 align-items-center justify-content-start">
+            <li style="background-color: #222831;border-radius: 20px;padding-left:15px;padding-right: 15px "
+                class="d-flex align-items-center gap-3 py-1 text-light" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasLeft"
+                aria-controls="offcanvasRight">
+                <i class="fa-solid fa-bars"></i>
+                <button class="text-light" style="border: none;outline: none;background-color: #222831" type="button"
+                        data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions">دسته بندی
+                </button>
+            </li>
+
+            <li class="d-md-flex d-lg-flex d-none">
+                <a href="{% url 'Home:home' %}">خانه</a>
+            </li>
+            <li class="nav-item d-md-flex d-lg-flex d-none">
+                <a class="nav-link text-dark" href="{% url 'products:products' %}">محصولات</a>
+            </li>
+            {#            <li class="d-md-flex d-lg-flex d-none">#}
+            {#                <a href=""> محصولات</a>#}
+            {#            </li>#}
+            {#            <li class="d-md-flex d-lg-flex d-none">#}
+            {#                <a href="#">پر فروش ترین ها</a>#}
+            {#            </li>#}
+            {#            <li class="d-md-flex d-lg-flex d-none">#}
+            {#                <a href="#"> پربازدیدترین ها</a>#}
+            {#            </li>#}
+        </ul>
+    </header>
+</nav>
+
+<div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
+     aria-labelledby="offcanvasWithBothOptionsLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">برند</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <ul class="nav">
+            {% for p in categories %}
+{#                <li>#}
+{#                    <a href="{% url 'products:cat_products' p.slug p.id %}">{{ p.name }}</a>#}
+{#                </li>#}
+                <ul>
+                    {% for cat2 in p.sub_cat_two.all %}
+                        <li>
+                            <a href="{% url 'products:cat_products' cat2.slug cat2.id %}">{{ cat2.name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

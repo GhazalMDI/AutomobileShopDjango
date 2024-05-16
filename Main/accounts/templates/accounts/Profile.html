@@ -1,0 +1,451 @@
+{% extends '_base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}پروفایل{% endblock %}
+{% block css %}
+    <link href="{% static 'style.css' %}" rel="stylesheet">
+    <style>
+        .form-control:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        .product-count {
+            margin-top: 15px;
+        }
+
+        .product-count .qtyminus,
+        .product-count .qtyplus {
+            width: 34px;
+            height: 34px;
+            background: #212529;
+            text-align: center;
+            font-size: 19px;
+            line-height: 36px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .product-count .qtyminus {
+            border-radius: 0 3px 3px 0;
+        }
+
+        .product-count .qtyplus {
+            border-radius: 3px 0 0 3px;
+        }
+
+        .product-count .qty {
+            width: 60px;
+            text-align: center;
+        }
+
+        .product-count .qty {
+            width: 60px;
+            text-align: center;
+        }
+
+        .round-black-btn {
+            border-radius: 4px;
+            background: #212529;
+            color: #fff;
+            padding: 7px 45px;
+            display: inline-block;
+            margin-top: 20px;
+            border: solid 2px #212529;
+            transition: all 0.5s ease-in-out 0s;
+        }
+
+        .round-black-btn:hover,
+        .round-black-btn:focus {
+            background: transparent;
+            color: #212529;
+            text-decoration: none;
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid bg-d">
+        <div class="row mt-4 gap-2">
+            <div class="col-3 rounded shadow">
+                <ul class="list-title border rounded">
+                    <li class="d-flex align-items-center ">
+                        <i class="fa fa-user border p-2 rounded rounded-pill border-dark fs-5"></i>
+                        <div class="d-flex align-items-center flex-column justify-content-center">
+                            <a href="" class="full">{{ request.user.full_name }}</a>
+                            <small>{{ request.user.phone_number }}</small>
+                        </div>
+
+                    </li>
+                    <hr>
+                    <li><i class="fa-solid fa-cart-shopping me-2"></i><span style="cursor: pointer"
+                                                                            onclick="showCart()">سبد خرید</span></li>
+                    {#                    <li><i class="fa-solid fa-map-location me-2"></i><span style="cursor: pointer"#}
+                    {#                                                                           onclick="showAddress()">آدرس</span></li>#}
+                    <li><i class="fa-solid fa-code-compare me-2"></i><span onclick="showComment()">نظرات</span></li>
+                    <li><i class="fa-solid fa-heart me-2"></i><span style="cursor: pointer"
+                                                                    onclick="showLike()">مورد علاقه ها</span>
+                    </li>
+
+
+                </ul>
+                <div class="border rounded p-2 mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <span>قیمت کالاها ({{ len_cart }})</span>
+                        <p>{{ cart.get_total_price | intcomma }} تومان </p>
+                    </div>
+                    <a href="" class="btn btn-danger col-12"> تکمیل سفارش</a>
+
+                </div>
+            </div>
+            <div class="col-8 shadow mb-5">
+                <div id="information">
+                    <div class="row border-bottom pb-4">
+                        <div class="col-6 d-flex align-items-start">
+                            <p class="fs-3">اطلاعات کاربری</p>
+                        </div>
+                        <div class="col-6 d-flex align-items-end justify-content-end">
+                            <a onclick="informationShow()" class="btn-edit text-light "><i
+                                    class="fa-solid fa-pencil  text-light me-2"></i>ویرایش
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div id="information-1" style="display: flex" class="row mt-2">
+                    <div class="col-6">
+                        <div class="">
+                            <p class="gray fw-bold fs-6"> نام و نام خانوادگی :</p>
+                            <small class="text-dark" style="font-size: small">{{ request.user.full_name }}</small>
+                        </div>
+                        <div class="mt-4">
+                            <p class="gray fw-bold fs-6"> شماره تماس :</p>
+                            <small class="text-dark" style="font-size: small">{{ request.user.phone_number }}</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div>
+                            <p class="gray fw-bold fs-6"> تاریخ تولد :</p>
+                            <small class="text-dark" style="font-size: small">
+                                {% if  request.user.birthday %}{{ request.user.birthday }}{% else %}
+                                    ---- {% endif %}</small>
+                        </div>
+                        <div class="mt-4">
+                            <p class="gray fw-bold fs-6"> کد پستی :</p>
+                            <small class="text-dark" style="font-size: small">
+                                {% if  request.user.postal_code %}{{ request.user.postal_code }}{% else %}
+                                    ---- {% endif %}</small>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div>
+                            <p class="gray fw-bold fs-6"> آدرس :</p>
+                            <small class="text-dark" style="font-size: small">
+                                {% if  request.user.address %}{{ request.user.address }}{% else %}
+                                    ---- {% endif %}</small>
+                        </div>
+                    </div>
+                </div>
+                <div id="information-2" style="display: none" class=" row mt-4">
+                    {#                    <div class="">#}
+                    <form method="post" class="d-flex align-items-center flex-column" novalidate action="">
+                        {% csrf_token %}
+                        {{ form }}
+                        <br>
+                        <input type="submit" value="ویرایش" class="btn-edit text-light">
+                    </form>
+                    {#                    </div>#}
+                </div>
+                <div id="comment-box" style="display: none" class="row my-2">
+                    <div class="row  pb-4">
+                        <div class="col-6 d-flex align-items-start">
+                            <p class="fs-3"> نظرات  </p>
+                        </div>
+                    </div>
+                    <div class="row d-flex">
+                        <table class="table">
+                            <tbody>
+                            {% for comment in comments %}
+
+                                <tr>
+                                    <th scope="row">{{ forloop.counter }}</th>
+                                    <td><a href="{{ comment.product.get_absolute_url }}">{{ comment.product.name }}</a>
+                                    </td>
+                                    <td>{{ comment.body| safe }}o</td>
+                                    <td>{% if comment.active %}ثبت شده
+                                    {% else %}در انتظار تایید{% endif %}
+                                </tr>
+                                </tbody>
+                            {% endfor %}
+
+                        </table>
+                        {#                            <p>{{ comment.body|safe }}</p>#}
+                    </div>
+
+                </div>
+                <div id="favourite-box" style="display: none" class="row mt-2">
+                    <div class="row  pb-4">
+                        <div class="col-6 d-flex align-items-start">
+                            <p class="fs-3 mb-3">مورد علاقه ها </p>
+                        </div>
+                        <br>
+                        <hr>
+
+                    </div>
+                    <div class="row d-flex align-items-center justify-content-start  ">
+                        {% for l in likes %}
+                            <div class="card col-4 p-3 d-flex align-items-center ">
+                                <a href="{{ l.product.get_absolute_url }}">
+                                    <img src="{{ l.product.image.url }}" alt="{{ l.product.name }}"
+                                         style="width: 150px">
+                                    <div class="d-flex align-items-center flex-column">
+                                        <p>{{ l.product.name }}</p>
+                                        <p>{{ l.product.unit_price | intcomma }} تومان </p>
+                                        <div class="">
+                                            <a class="btn btn-danger"
+                                               href="{% url 'products:removeProductsLike' l.product.slug %}">حذف</a>
+                                            <a href="{% url 'cart:cart' l.product.slug l.product.id %}"
+                                               class="btn btn-dark">اضافه
+                                                به سبد خرید</a>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div id="cart-box" style="display: none" class="row mt-2">
+                    <div class="row mx-2  pb-4">
+                        <div class="col-6 d-flex align-items-start">
+                            <p class="fs-3">سبد خرید({{ len_cart }}) </p>
+
+                        </div>
+                    </div>
+                    <div class="row mx-2 mb-2 d-flex align-items-center justify-content-start" style="overflow-y: scroll">
+
+                        {% for c in cart %}
+
+                            <div class="card d-flex flex-row py-3">
+                                <a href="{{ c.url }}" class="">
+                                    <img src="{{ c.image }}" alt="{{ c.name }}" style="width: 150px">
+                                </a>
+                                <div class="product-count">
+                                    <p>{{ c.name }}</p>
+                                    <p id="price">{{ c.unit_price | intcomma }} تومان </p>
+                                    {% if c.discount %}<p>{{ c.discount }} % </p>{% endif %}
+                                    <a href="{% url 'cart:cart' c.slug c.id %}">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </a>
+
+                                    <input type="text" id="" name="quantity" value="{{ c.quantity }}"
+                                           class="" style="outline: none;border: none;width: 15px">
+                                    <a href="{% url 'cart:RemoveOneCart' c.id c.slug %}">
+                                        <i class="fa-solid fa-minus"></i>
+                                    </a>
+                                    <p id="total_{{ c.id }}">{{ c.total |intcomma }} تومان</p>
+                                </div>
+
+                            </div>
+                            {#                                                    <span>{{ cart.get_total_price | intcomma }}</span>#}
+
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {#        <a href="{% url 'cart:clearAll' %}" type="submit">dfcvfd</a>#}
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        {#function RemoveToCartOne(product_id, add_url, login_url) {#}
+        {#    $.ajax({#}
+        {#            url: add_url,#}
+        {#            type: 'get',#}
+        {#            data: {#}
+        {#                'c_id': product_id,#}
+        {#            },#}
+        {#            success: function (data) {#}
+        {#                if (data['login_required']) {#}
+        {#                    window.location.href = login_url;#}
+        {#                }#}
+        {#                var newQuantity = parseInt($("#quantity_" + product_id).val()) - 1;#}
+        {#                $("#quantity_" + product_id).val(newQuantity);#}
+        {#                if (newQuantity <= 0) {#}
+        {#                    $("#product_" + product_id).remove()#}
+        {#                }#}
+        {#                $('.qty').each(function () {#}
+        {#                        var quantity = newQuantity#}
+        {#                        console.log(quantity)#}
+        {#                        var text = $("#price").text()#}
+        {#                        var price = parseFloat(text)#}
+        {#                        console.log(price)#}
+        {#                        console.log(text)#}
+        {#                        if (!isNaN(price)) {#}
+        {#                            total = quantity * price;#}
+        {#                            ($("#total_" + product_id).html(total))#}
+        {#                        }#}
+        {#                    }#}
+        {#                )#}
+        {#            }#}
+        {#        }#}
+        {#    )#}
+
+
+        const favourite = document.getElementById('favourite-box')
+        const cart = document.getElementById('cart-box')
+        const information1 = document.getElementById('information-1')
+        const information2 = document.getElementById('information-2')
+        const information = document.getElementById('information')
+        const comment_box = document.getElementById('comment-box')
+
+        function showComment() {
+            if (comment_box.style.display === "none") {
+                comment_box.style.display = 'block'
+                information2.style.display = "none"
+                information1.style.display = "none"
+                information.style.display = "none"
+                favourite.style.display = "none"
+                cart.style.display = 'none'
+
+            }
+        }
+
+        function informationShow() {
+            if (information2.style.display === "none" && information1.style.display === "flex" && favourite.style.display === 'none') {
+                information2.style.display = "flex"
+                information1.style.display = "none"
+                comment_box.style.display = "none"
+            } else {
+                information2.style.display = "none"
+                information1.style.display = "flex"
+                comment_box.style.display = "none"
+
+            }
+        }
+
+        function showLike() {
+            if (favourite.style.display === 'none') {
+                information.style.display = 'none'
+                information1.style.display = 'none'
+                favourite.style.display = 'block'
+                comment_box.style.display = "none"
+
+            }
+            {#    information1.style.display = 'flex'#}
+            {#    favourite.style.display = 'none'#}
+            {#    information.style.display = 'flex'#}
+        }
+
+        function showCart() {
+            if (cart.style.display === 'none') {
+                cart.style.display = 'block'
+                information.style.display = 'none'
+                information1.style.display = 'none'
+                information2.style.display = 'none'
+                favourite.style.display = 'none'
+
+
+            }
+            {#else {#}
+            {#    cart.style.display = 'none'#}
+            {#    information.style.display = 'flex'#}
+            {#    information1.style.display = 'flex'#}
+            {#    favourite.style.display = 'none'#}
+            {##}
+
+        }
+
+        jalaliDatepicker.startWatch({
+            minDate: "attr",
+            maxDate: "attr"
+        });
+
+        {#var map = L.map('map').setView([35.70072333, 51.38072233], 100)#}
+        {#L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {#}
+        {#    attribution: '&copy; OpenStreetMap contributors'#}
+        {#var redIcon = L.divIcon({#}
+        {#    className: 'leaflet-div-icon',#}
+        {#    html: '<i class=" fs-1 fa-solid fa-location-dot"></i>',#}
+        {#    iconSize: [30, 30],#}
+        {#    iconAnchor: [15, 15]#}
+        {##}
+        {#var marker;#}
+        {#map.on('click', function (e) {#}
+        {#    if (marker) {#}
+        {#        map.removeLayer(marker)#}
+        {#    }#}
+        {#    // let homeUrl = '/'#}
+        {#    marker = L.marker(e.latlng, {icon: redIcon}).addTo(map)#}
+        {#    let lat = e.latlng.lat;#}
+        {#    let lng = e.latlng.lng;#}
+        {#    console.log(lng, lat);#}
+        {##}
+        {#    $.ajax({#}
+        {#        url: homeUrl,#}
+        {#        type: 'get',#}
+        {#        headers: {'X-CSRFToken': "{{ csrf_token }}"},#}
+        {#        data: {#}
+        {#            'lat': lat,#}
+        {#            'lng': lng#}
+        {#        },#}
+        {#        success: function (data) {#}
+        {#            console.log(data)#}
+        {#        }#}
+        {#    });#}
+
+        //
+        {#const information1 = document.getElementById('information-1')#}
+        {#const information2 = document.getElementById('information-2')#}
+        {#const addressBox = document.getElementById('address-box')#}
+        {#const information = document.getElementById('information')#}
+        {#const mapbox = document.getElementById('map-box')#}
+        {#const mapIcon = document.getElementById('mapIcon')#}
+        {#const favourite = document.getElementById('favourite-box')#}
+        {##}
+        {#function informationShow() {#}
+        {#    if (information2.style.display === "none" && information1.style.display === "flex" &&  favourite.style.display === 'none') {#}
+        {#        information2.style.display = "flex"#}
+        {#        information1.style.display = "none"#}
+        {#    } else {#}
+        {#        information2.style.display = "none"#}
+        {#        information1.style.display = "flex"#}
+        {#    }#}
+
+        {#function showAddress() {#}
+        {#    if (addressBox.style.display === 'none') {#}
+        {#        information.style.display = 'none'#}
+        {#        addressBox.style.display = 'flex'#}
+        {#        information1.style.display = "none"#}
+        {#        information2.style.display = "none"#}
+        {#        favourite.style.display = "none"#}
+        {#    } else {#}
+        {#addressBox.style.display = 'none'#}
+        {#        information.style.display = 'block'#}
+        {#        information1.style.display = "flex"#}
+        {#        favourite.style.display = "none"#}
+        {##}
+        {#    }#}
+
+        {##}
+        {#function mapShow() {#}
+        {#    if (mapbox.style.display === 'none') {#}
+        {#        mapbox.style.display = 'flex'#}
+        {#        mapIcon.style.display = 'none'#}
+        {#        favourite.style.display = "none"#}
+        {##}
+        {#    } else {#}
+        {#        mapbox.style.display = 'none'#}
+        {#        mapIcon.style.display = 'flex'#}
+        {#        favourite.style.display = "none"#}
+        {##}
+        {#    }#}
+
+    </script>
+    <script src="{% static 'javaScript.js' %}"></script>
+{% endblock %}

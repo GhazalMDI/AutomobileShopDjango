@@ -1,0 +1,91 @@
+{% extends '_base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}
+    محصولات
+{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'products/style.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div>
+    <div class="container-fluid  ">
+        <div class="row rounded border py-2 mx-2 px-3">
+            {% if catname %}
+                <span>{{ catname.categoryOne.name }} / {{ catname.categoryTwo.name }} </span>
+            {% else %}
+                <span>همه ی محصولات</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="container mt-3">
+        <div class="row d-flex align-items-start justify-content-between gap-1">
+            <div class="col-2 border" style="width: 15rem;">
+                <div class="mt-2">
+                    <form method="get" novalidate action="">
+                        <input type="text" name="less" class="form-control" placeholder="از قیمت">
+                        <input type="text" name="more" class="form-control" placeholder="تا قیمت">
+                        <div class="mt-5">
+                            <input type="text" name="SearchBox" placeholder="جست و جو کنید" class="form-control">
+                            <input type="submit" value="جست و جو" class="btn btn-dark">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="row">
+                <form method="get" novalidate action="" name="sort_product">
+                    <input type="submit" name="sort_product" value="گران ترین" class="btn btn-dark">
+                    <input type="submit" name="sort_product" value="ارزان ترین" class="btn btn-dark">
+                    <input type="submit" name="sort_product" value=" پر تخفیف ترین" class="btn btn-dark">
+                </form>
+            </div>
+            <div class="row d-flex align-items-center justify-content-start" style="">
+                {% for product in products %}
+                    <div class="card col-4 p-3">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}">
+                        {% endif %}
+                        <p>{{ product.name }}</p>
+                        <p> {{ product.unit_price  | intcomma  }} تومان</p>
+                        <div>
+                            <a class="btn btn-dark" href="{% url 'products:productDetails' product.slug product.id %}">جزئیات</a>
+                            {% if product.discount %}<p class="btn btn-danger">{{ product.discount }}%</p>{% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+                <div>
+                    <ul class="pagination justify-content-center">
+                        {% if products.has_next %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?page={{ products.next_page_number }}&{{ url_data }}">بعدی</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link">بعدی</a>
+                            </li>
+                        {% endif %}
+                        <li class="page-item active"><a class="page-link" href="#">{{ products.number }}</a></li>
+                        {% if products.has_previous %}
+                            <li class="page-item ">
+                                <a class="page-link"
+                                   href="?page={{ products.previous_page_number }}&{{ url_data }}">قبلی</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link disabled" href="#">قبلی</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+{% endblock %}
+{% block js %}
+{#    <script src="{% static 'products/javascript.js' %}"></script>#}
+{% endblock %}

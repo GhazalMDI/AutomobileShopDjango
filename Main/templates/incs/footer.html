@@ -1,0 +1,149 @@
+{% load static %}
+{% block css %}
+    <style>
+        body, *, p, span, h1, h2, h3, h4, h5 {
+            font-family: 'vazir';
+        }
+
+        #picassoFooter {
+            background-color: #272727;
+            color: #ffffff;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+            font-family: "Arial", sans-serif;
+        }
+
+        .footer-navigation,
+        .footer-contact,
+        .footer-social {
+            margin: 10px;
+        }
+
+        .footer-navigation h3,
+        .footer-contact h3,
+        .footer-social h3 {
+            color: #f0f0f0;
+            margin-bottom: 15px;
+        }
+
+        .footer-navigation ul,
+        .footer-social .social-icons {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-navigation ul li,
+        .social-icon {
+            margin-bottom: 10px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .footer-navigation ul li a,
+        .social-icon {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .social-icon {
+            display: inline-block;
+            padding: 8px;
+            background-color: #333;
+            margin-right: 5px;
+        }
+
+        .social-icon:hover,
+        .footer-navigation ul li a:hover {
+            transform: scale(1.1);
+        }
+
+        .footer-art canvas {
+            max-width: 100px;
+            height: auto;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            #picassoFooter {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .footer-art canvas {
+                max-width: 100%;
+            }
+        }
+    </style>
+{% endblock %}
+
+<footer id="picassoFooter">
+    <div class="footer-navigation">
+        <h3 STYLE="font-family: Vazir">دسترسی سریع</h3>
+        <ul>
+            <li><a href="#home">خانه</a></li>
+            <li><a href="#about">درباره ما</a></li>
+            <li><a href="#services">سرویس ها</a></li>
+            <li><a href="#contact">ارتباط با ما</a></li>
+        </ul>
+    </div>
+    <div class="footer-contact">
+        <h3 style="font-family: Vazir">راه های ارتباطی</h3>
+        <p>ghazal.mohammadi@gmail.com</p>
+        <p> +123 456 7890</p>
+    </div>
+    <div class="footer-social">
+        <h3 style="font-family: Vazir">ما را در شبکه های اجتماعی دنبال کنید</h3>
+        <div class="social-icons">
+            <a href="https://facebook.com" target="_blank" class="social-icon">facebook</a>
+            <a href="https://twitter.com" target="_blank" class="social-icon">twitter</a>
+            <a href="https://instagram.com" target="_blank" class="social-icon">instagram
+                {#                <i class="fas fa-instagram"></i>#}
+            </a>
+        </div>
+    </div>
+    <div class="footer-art">
+        <canvas id="picassoCanvas"></canvas>
+    </div>
+</footer>
+
+
+{% block js %}
+    <script>
+        window.onload = function () {
+            var canvas = document.getElementById('picassoCanvas');
+            if (canvas.getContext) {
+                var ctx = canvas.getContext('2d');
+
+                // Set canvas size
+                canvas.width = 200;
+                canvas.height = 200;
+
+                // Draw abstract shapes
+                ctx.fillStyle = "#FFD700"; // Gold
+                ctx.beginPath();
+                ctx.moveTo(100, 0);
+                ctx.lineTo(200, 100);
+                ctx.lineTo(100, 200);
+                ctx.lineTo(0, 100);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = "#AFEEEE"; // PaleTurquoise
+                ctx.beginPath();
+                ctx.arc(100, 100, 50, 0, Math.PI * 2, true); // Circle
+                ctx.fill();
+
+                // Add some dynamic lines for visual interest
+                ctx.moveTo(0, 0);
+                ctx.lineTo(200, 200);
+                ctx.moveTo(200, 0);
+                ctx.lineTo(0, 200);
+                ctx.strokeStyle = "#FFFFFF";
+                ctx.stroke();
+            }
+        };
+    </script>
+    <script src="{% static 'js/javascript.js' %}"></script>
+{% endblock %}

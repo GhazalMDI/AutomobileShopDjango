@@ -1,0 +1,152 @@
+{% extends '_base.html' %}
+{% load static %}
+{% block title %}
+    اتومبیل
+{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'home/style/style.css' %}">
+{% endblock %}
+{% block content %}
+
+    <div id="carouselExample" class="carousel slide">
+        <div class="carousel-inner" style="width: 100%">
+            {% for banner in banners %}
+                <div class="carousel-item active" style="width: 100%;">
+                    <img src='{{ banner.image.url }}' class="d-block w-md-100 w-lg-100 w-100 h-75 " style="width: 100%;"
+                         alt="...">
+                </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <div class="container ">
+        <div class="row my-3">
+            <h3 style="font-family: Vazir">محصولات ویژه</h3>
+        </div>
+        <div class="owl-carousel owl-theme">
+            {% for s in special %}
+                <a href="{{ s.get_absolute_url }}">
+                    <div class="item">
+                        <div class="card" style="height: 20rem">
+                            <img src="{{ s.image.url }}" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ s.name }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="container ">
+        <div class="row my-3">
+            <h3 style="font-family: Vazir">لنت ترمز </h3>
+        </div>
+        <div class="owl-carousel owl-theme">
+            {% for s in brakepads %}
+                <a href="{{ s.get_absolute_url }}">
+                    <div class="item">
+                        <div class="card" style="height: 20rem">
+                            <img src="{{ s.image.url }}" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ s.name }}</h5>
+
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="container ">
+        <div class="row my-3">
+            <h3 style="font-family: Vazir">فیلتر هوا </h3>
+        </div>
+        <div class="owl-carousel owl-theme">
+            {% for s in airfilter %}
+                <a href="{{ s.get_absolute_url }}">
+                    <div class="item">
+                        <div class="card" style="height: 20rem">
+                            <img src="{{ s.image.url }}" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ s.name }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="container ">
+        <div class="row my-3">
+            <h3 style="font-family: Vazir">روغن موتور </h3>
+        </div>
+        <div class="owl-carousel owl-theme">
+            {% for s in oil %}
+                <a href="{{ s.get_absolute_url }}">
+                    <div class="item">
+                        <div class="card" style="height: 20rem">
+                            <img src="{{ s.image.url }}" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ s.name }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="container mb-4">
+        <div class="row my-3">
+            <h3 style="font-family: Vazir">باطری </h3>
+        </div>
+        <div class="owl-carousel owl-theme">
+            {% for s in battery %}
+                <a href="{{ s.get_absolute_url }}">
+                    <div class="item">
+                        <div class="card" style="height: 20rem">
+                            <img src="{{ s.image.url }}" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ s.name }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+
+{% endblock %}
+{% block js %}
+    <script>
+        $('.owl-carousel').owlCarousel({
+            loop: false,
+            margin: 10,
+            rtl: true,
+            nav: true,
+            responsive: {
+                0: {
+                    items: 1
+                },
+                600: {
+                    items: 3
+                },
+                1000: {
+                    items: 5
+                }
+            }
+        })
+    </script>
+{% endblock %}
+
+

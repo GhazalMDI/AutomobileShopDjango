@@ -1,0 +1,708 @@
+{% extends '_base.html' %}
+{% load TagFilter %}
+{% load static %}
+{% load humanize %}
+{% load jformat %}
+{% block title %}جزئیات محصول{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'products/style.css' %}">
+    <style>
+        .comment-thread {
+            width: 100%;
+            max-width: 100%;
+            /* margin: auto; */
+            /* padding: 0 30px; */
+            background-color: #fff;
+            border: 1px solid transparent;
+        }
+
+        .m-0 {
+            margin: 0;
+        }
+
+        .sr-only {
+            position: absolute;
+            left: -10000px;
+            top: auto;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+
+        /* Comment */
+
+        .comment {
+            position: relative;
+            margin: 20px auto;
+        }
+
+        .comment-heading, .comment-heading-1 {
+            display: flex;
+            align-items: center;
+            height: 50px;
+            font-size: 14px;
+        }
+
+        .comment-info {
+            color: rgba(0, 0, 0, 0.5);
+            margin-left: 10px;
+        }
+
+        .comment-author {
+            color: rgba(0, 0, 0, 0.85);
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .comment-author:hover {
+            text-decoration: underline;
+        }
+
+        .replies {
+            margin-left: 20px;
+        }
+
+        /* Adjustments for the comment border links */
+
+        .comment-border-link {
+            display: block;
+            position: absolute;
+            top: 50px;
+            left: 0;
+            width: 12px;
+            height: calc(100% - 50px);
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            background-color: rgba(0, 0, 0, 0.1);
+            background-clip: padding-box;
+        }
+
+        .comment-border-link:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .comment-body {
+            padding: 0 20px;
+            padding-left: 28px;
+        }
+
+        .replies {
+            margin-left: 28px;
+        }
+
+        /* Adjustments for toggleable comments */
+
+        details.comment summary {
+            position: relative;
+            list-style: none;
+            cursor: pointer;
+        }
+
+        details.comment summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details.comment:not([open]) .comment-heading {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .comment-heading::after {
+            display: inline-block;
+            position: absolute;
+            left: 5px;
+            align-self: center;
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.55);
+        }
+
+        details.comment[open] .comment-heading::after {
+            content: "پنهان شود";
+        }
+
+        details.comment:not([open]) .comment-heading::after {
+            content: "پنهان شود";
+        }
+
+        /* Adjustment for Internet Explorer */
+
+        @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+            /* Resets cursor, and removes prompt text on Internet Explorer */
+            .comment-heading {
+                cursor: default;
+            }
+
+            details.comment[open] .comment-heading::after,
+            details.comment:not([open]) .comment-heading::after {
+                content: " ";
+            }
+        }
+
+        /* Styling the reply to comment form */
+
+        .reply-form textarea {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-size: 16px;
+            width: 100%;
+            max-width: 100%;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .d-none {
+            display: none;
+        }
+
+        .avatar_comment img {
+            height: 48px;
+            width: 48px;
+        }
+
+        .box_comment {
+            display: block;
+            position: relative;
+            line-height: 1.358;
+            word-break: break-word;
+            border: 1px solid #d3d6db;
+            word-wrap: break-word;
+            background: #fff;
+            box-sizing: border-box;
+            cursor: text;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            padding: 0;
+        }
+        .box_comment textarea {
+            min-height: 40px;
+            padding: 12px 8px;
+            width: 100%;
+            border: none;
+            resize: none;
+        }
+        .box_comment textarea:focus {
+            outline: none !important;
+        }
+        .box_comment .box_post {
+            border-top: 1px solid #d3d6db;
+            background: #f5f6f7;
+            padding: 8px;
+            display: block;
+            overflow: hidden;
+        }
+        .box_comment label {
+            display: inline-block;
+            vertical-align: middle;
+            font-size: 11px;
+            color: #90949c;
+            line-height: 22px;
+        }
+        .box_comment button {
+            margin-left: 8px;
+            background-color: #4267b2;
+            border: 1px solid #4267b2;
+            color: #fff;
+            text-decoration: none;
+            line-height: 22px;
+            border-radius: 2px;
+            font-size: 14px;
+            font-weight: bold;
+            position: relative;
+            text-align: center;
+        }
+        .box_comment button:hover {
+            background-color: #29487d;
+            border-color: #29487d;
+        }
+        .box_comment .cancel {
+            margin-left: 8px;
+            background-color: #f5f6f7;
+            color: #4b4f56;
+            text-decoration: none;
+            line-height: 22px;
+            border-radius: 2px;
+            font-size: 14px;
+            font-weight: bold;
+            position: relative;
+            text-align: center;
+            border-color: #ccd0d5;
+        }
+        .box_comment .cancel:hover {
+            background-color: #d0d0d0;
+            border-color: #ccd0d5;
+        }
+        .box_comment img {
+            height: 16px;
+            width: 16px;
+        }
+        .box_result {
+            margin-top: 24px;
+        }
+        .box_result .result_comment h4 {
+            font-weight: 600;
+            white-space: nowrap;
+            color: #365899;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            line-height: 1.358;
+            margin: 0;
+        }
+        .box_result .result_comment {
+            display: block;
+            overflow: hidden;
+            padding: 0;
+        }
+        .child_replay {
+            border-left: 1px dotted #d3d6db;
+            margin-top: 12px;
+            list-style: none;
+            padding: 0 0 0 8px
+        }
+        .reply_comment {
+            margin: 12px 0;
+        }
+        .box_result .result_comment p {
+            margin: 4px 0;
+            text-align: justify;
+        }
+        .box_result .result_comment .tools_comment {
+            font-size: 12px;
+            line-height: 1.358;
+        }
+        .box_result .result_comment .tools_comment a {
+            color: #4267b2;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .box_result .result_comment .tools_comment span {
+            color: #90949c;
+        }
+        .body_comment .show_more {
+            background: #3578e5;
+            border: none;
+            box-sizing: border-box;
+            color: #fff;
+            font-size: 14px;
+            margin-top: 24px;
+            padding: 12px;
+            text-shadow: none;
+            width: 100%;
+            font-weight: bold;
+            position: relative;
+            text-align: center;
+            vertical-align: middle;
+            border-radius: 2px;
+        }
+        .pd-wrap {
+            padding: 40px 0;
+            font-family: "Poppins", sans-serif;
+        }
+        .heading-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .sub-heading {
+            font-family: "Poppins", sans-serif;
+            font-size: 12px;
+            display: block;
+            font-weight: 600;
+            color: #2e9ca1;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .heading-section h2 {
+            font-size: 32px;
+            font-weight: 500;
+            padding-top: 10px;
+            padding-bottom: 15px;
+            font-family: "Poppins", sans-serif;
+        }
+        .user-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            position: relative;
+            min-width: 80px;
+            background-size: 100%;
+        }
+        .carousel-testimonial .item {
+            padding: 30px 10px;
+        }
+        .quote {
+            position: absolute;
+            top: -23px;
+            color: #2e9da1;
+            font-size: 27px;
+        }
+        .name {
+            margin-bottom: 0;
+            line-height: 14px;
+            font-size: 17px;
+            font-weight: 500;
+        }
+        .position {
+            color: #adadad;
+            font-size: 14px;
+        }
+        .owl-nav button {
+            position: absolute;
+            top: 50%;
+            transform: translate(0, -50%);
+            outline: none;
+            height: 25px;
+        }
+        .owl-nav button svg {
+            width: 25px;
+            height: 25px;
+        }
+        .owl-nav button.owl-prev {
+            left: 25px;
+        }
+        .owl-nav button.owl-next {
+            right: 25px;
+        }
+        .owl-nav button span {
+            font-size: 45px;
+        }
+        .product-thumb .item img {
+            height: 100px;
+        }
+        .product-name {
+            font-size: 22px;
+            font-weight: 500;
+            line-height: 22px;
+            margin-bottom: 4px;
+        }
+        .product-price-discount {
+            font-size: 22px;
+            font-weight: 400;
+            padding: 10px 0;
+            clear: both;
+        }
+        .product-price-discount span.line-through {
+            text-decoration: line-through;
+            margin-left: 10px;
+            font-size: 14px;
+            vertical-align: middle;
+            color: #a5a5a5;
+        }
+        .display-flex {
+            display: flex;
+        }
+        .align-center {
+            align-items: center;
+        }
+        .product-info {
+            width: 100%;
+        }
+        .reviews-counter {
+            font-size: 13px;
+        }
+        .reviews-counter span {
+            vertical-align: -2px;
+        }
+        .rate {
+            float: left;
+            padding: 0 10px 0 0;
+        }
+        .rate:not(:checked) > input {
+            position: absolute;
+            top: -9999px;
+        }
+        .rate:not(:checked) > label {
+            float: right;
+            width: 15px;
+            overflow: hidden;
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: 21px;
+            color: #ccc;
+            margin-bottom: 0;
+            line-height: 21px;
+        }
+        .rate:not(:checked) > label:before {
+            content: "\2605";
+        }
+        .rate > input:checked ~ label {
+            color: #ffc700;
+        }
+        .rate:not(:checked) > label:hover,
+        .rate:not(:checked) > label:hover ~ label {
+            color: #deb217;
+        }
+        .rate > input:checked + label:hover,
+        .rate > input:checked + label:hover ~ label,
+        .rate > input:checked ~ label:hover,
+        .rate > input:checked ~ label:hover ~ label,
+        .rate > label:hover ~ input:checked ~ label {
+            color: #c59b08;
+        }
+        .product-dtl p {
+            font-size: 14px;
+            line-height: 24px;
+            color: #111111;
+        }
+        .product-dtl .form-control {
+            font-size: 15px;
+        }
+        .product-dtl label {
+            line-height: 16px;
+            font-size: 15px;
+        }
+        .form-control:focus {
+            outline: none;
+            box-shadow: none;
+        }
+        .product-count {
+            margin-top: 15px;
+        }
+        .product-count .qtyminus,
+        .product-count .qtyplus {
+            width: 34px;
+            height: 34px;
+            background: #212529;
+            text-align: center;
+            font-size: 19px;
+            line-height: 36px;
+            color: #fff;
+            cursor: pointer;
+        }
+        .product-count .qtyminus {
+            border-radius: 0 3px 3px 0;
+        }
+        .product-count .qtyplus {
+            border-radius: 3px 0 0 3px;
+        }
+        .product-count .qty {
+            width: 60px;
+            height: 34px;
+            text-align: center;
+        }
+        .round-black-btn {
+            border-radius: 4px;
+            background: #212529;
+            color: #fff;
+            padding: 7px 45px;
+            display: inline-block;
+        {#margin-top: 20px;#} border: solid 2px #212529;
+            transition: all 0.5s ease-in-out 0s;
+        }
+        .round-black-btn:hover,
+        .round-black-btn:focus {
+            background: transparent;
+            color: #212529;
+            text-decoration: none;
+        }
+        .product-info-tabs {
+            margin-top: 25px;
+        }
+        .product-info-tabs .nav-tabs {
+            border-bottom: 2px solid #d8d8d8;
+        }
+        .product-info-tabs .nav-tabs .nav-item {
+            margin-bottom: 0;
+        }
+        .product-info-tabs .nav-tabs .nav-link {
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: #323232;
+        }
+        .product-info-tabs .nav-tabs .nav-item .nav-link:hover {
+            border: none;
+        }
+        .product-info-tabs .nav-tabs .nav-item.show .nav-link,
+        .product-info-tabs .nav-tabs .nav-link.active,
+        .product-info-tabs .nav-tabs .nav-link.active:hover {
+            border: none;
+            border-bottom: 2px solid #d8d8d8;
+            font-weight: bold;
+        }
+        .product-info-tabs .tab-content .tab-pane {
+            padding: 30px 20px;
+            font-size: 15px;
+            line-height: 24px;
+            color: rgba(0, 0, 0, 0.94);
+        }
+        .review-form .form-group {
+            clear: both;
+        }
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+        .review-form .rate {
+            float: none;
+            display: inline-block;
+        }
+        .review-heading {
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 24px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            color: #000;
+        }
+        .review-form .form-control {
+            font-size: 14px;
+        }
+        .review-form input.form-control {
+            height: 40px;
+        }
+        .review-form textarea.form-control {
+            resize: none;
+        }
+        .review-form .round-black-btn {
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="d-flex col-md-2">
+                <a href="{% url 'products:productsLike' product.slug %}">
+                <i class="fa-regular fa-heart fs-2" style="cursor: pointer"></i></a>
+
+            </div>
+            <div class="col-md-5">
+                <div class="col-3 d-flex align-items-center justify-content-center flex-column  rounded">
+                    <img src='{{ product.image.url }}' alt="" width="280rem" height="280rem" class="main m-3">
+                    <section class="">
+                        <div class=" d-flex justify-content-center gap-2 ">
+                            {% for image in product.galleryProduct.all %}
+                                <img src="{{ image.image.url }}" width="100rem" class="border indicator">
+                            {% endfor %}
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="product-dtl">
+                    <div class="product-info">
+                        <div class="product-name">{{ product.name }}</div>
+
+                        <div class="product-price-discount">{% if product.discount %}
+                            <span class="line-through">{{ product.after_discount | intcomma }} تومان</span>{% endif %}
+                            <span class="">{{ product.unit_price |intcomma }} تومان </span>
+                        </div>
+                    </div>
+                    <p>{{ product.description | safe }}</p>
+                </div>
+                <div class="product-count">
+                    <form action="{% url 'cart:cart' product.slug product.id %}"
+                          class="display-flex align-items-center">
+                        <div class="display-flex align-items-center ">
+                            <div class="qtyminus">-</div>
+                            <input type="text" name="quantity" value="1" class="qty" style="border: 1px solid;">
+                            <div class="qtyplus">+</div>
+                        </div>
+                        <button type="submit" class="round-black-btn mx-4">اضافه به سبد خرید</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui top attached tabular menu">
+        <a class="item active" data-tab="first">مشخصات</a>
+        <a class="item" data-tab="second">نظرات ({{ length }})</a>
+    </div>
+    <div class="ui bottom attached tab segment active" data-tab="first">
+        {{ product.description|safe }}
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="second">
+        <form method="post" class="col-8 d-flex align-items-center justify-content-end flex-column gap-3"
+              novalidate
+              action="">
+            {% csrf_token %}
+            <textarea style="font-family: Vazir" cols="70" rows="6" name="body" class="form-control" id="text"
+                      placeholder="متن"></textarea>
+            <button type="submit" class="round-black-btn">ثبت نظر</button>
+        </form>
+
+        {% for comment in comments %}
+            <div class="d-flex flex-column align-items-start justify-content-start gap-3 " style="width: 100%">
+                <div class="comment-thread">
+                    <details open class="comment" id="comment-1">
+                        <summary>
+                            <div class="comment-heading-1">
+                                <div class="comment-info">
+                                    <a href="#" class="comment-author">{{ comment.user.full_name }}</a>
+                                    <p class="m-0">
+                                        {{ comment.created | jformat:'%Y/%m/%d' }}                                            </p>
+                                </div>
+                            </div>
+                        </summary>
+                        <div class="comment-body flex-column d-flex align-items-start justify-content-start">
+                            <p>
+                                {{ comment.body | safe }}
+                            </p>
+                            <button class="border-0 outline-0" type="button" data-toggle="reply-form"
+                                    data-target="comment-{{ comment.id }}-reply-form">
+                                نقل قول
+                            </button>
+                            <form method="post" action="?cm_id={{ comment.id }}" novalidate
+                                  class="reply-form d-none"
+                                  id="comment-{{ comment.id }}-reply-form">
+                                {% csrf_token %}
+                                <textarea name="body" class="py-3 px-2 form-control" style="font-family: vazir"
+                                          placeholder="نظر خود را درباره ی این کامنت به اشتراک بگذارید"
+                                          cols="70" rows="6"></textarea>
+                                <button type="submit">ثبت نظر
+                                </button>
+                            </form>
+                        </div>
+                        <div class="">
+                            {% for rep in comment|replay %}
+                                <div class="replies ms-5">
+                                    <details open class="comment" id="comment-2">
+                                        <a href="#comment-2" class="comment-border-link">
+                                            <span class="sr-only"></span>
+                                        </a>
+                                        <summary>
+                                            <div class="comment-heading">
+                                                <div class="comment-info">
+                                                    <a href="#"
+                                                       class="comment-author">{{ rep.user.full_name }}</a>
+                                                    <p class="m-0">
+                                                        {{ rep.created | jformat:'%Y/%m/%d' }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </summary>
+                                        <div class="comment-body  flex-column d-flex align-items-start justify-content-start">
+                                            <p>
+                                                {{ rep.body | safe }}
+                                            </p>
+                                        </div>
+                                    </details>
+                                </div>
+                                </div>
+                                </details>
+                            {% endfor %}
+                </div>
+            </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+        document.addEventListener("click", function (event) {
+            var target = event.target;
+            var formId = target.getAttribute("data-target");
+            var form = document.getElementById(formId);
+            if (form) {
+                form.classList.toggle("d-none");
+            }
+        }, false);
+
+
+        $('.menu .item')
+            .tab()
+        ;
+
+
+    </script>
+
+    <script src="{% static 'products/javascript.js' %}"></script>
+
+{% endblock %}
